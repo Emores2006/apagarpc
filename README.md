@@ -1,0 +1,2 @@
+# apagarpc
+para apagar pcs
