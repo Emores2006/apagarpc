@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Control de Apagado</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            display: inline-block;
+        }
+        select, input, button {
+            margin: 10px;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        button {
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .btn-immediate {
+            background-color: #e74c3c;
+            color: white;
+        }
+        .btn-scheduled {
+            background-color: #3498db;
+            color: white;
+        }
+        button:disabled {
+            background-color: gray;
+            cursor: not-allowed;
+        }
+        button:hover {
+            opacity: 0.8;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Control de Apagado</h1>
+        <label for="password">Ingrese la contraseña:</label>
+        <input type="password" id="password">
+        <button onclick="verificarPassword()">Ingresar</button>
+        <br><br>
+        <div id="control" style="display: none;">
+            <label for="pc">Selecciona una PC:</label>
+            <select id="pc">
+                <option value="2222">PC1 (Puerto 2222)</option>
+                <option value="2223">PC2 (Puerto 2223)</option>
+            </select>
+            <br>
+            <label for="delay">Tiempo para apagar (min):</label>
+            <input type="number" id="delay" min="0" value="0">
+            <br>
+            <button class="btn-immediate" id="btnApagar" onclick="apagar(0)" disabled>Apagar Ahora</button>
+            <button class="btn-scheduled" id="btnProgramar" onclick="apagarConTiempo()" disabled>Programar Apagado</button>
+        </div>
+    </div>
+    
+    <script>
+        const PASSWORD_CORRECTA = "1234"; // Cambia esta clave
+
+        function verificarPassword() {
+            const password = document.getElementById('password').value;
+            if (password === PASSWORD_CORRECTA) {
+                document.getElementById('control').style.display = 'block';
+                document.getElementById('btnApagar').disabled = false;
+                document.getElementById('btnProgramar').disabled = false;
+            } else {
+                alert("Contraseña incorrecta");
+            }
+        }
+        
+        function apagar(delay) {
+            const port = document.getElementById('pc').value;
+            const user = "eliezer"; // Usuario de la PC remota
+            const key = "mi_clave_secreta_123"; // Clave secreta
+
+            fetch('http://localhost:3000/shutdown', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ port, delay, key, user })
+            })
+            .then(res => res.json())
+            .then(data => alert(data.message))
+            .catch(err => console.error(err));
+        }
+        
+        function apagarConTiempo() {
+            const delay = document.getElementById('delay').value;
+            apagar(delay);
+        }
+    </script>
+</body>
+</html>
